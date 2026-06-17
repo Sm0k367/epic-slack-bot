@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """
 Epic Agent Ultimate God Mode v6
-Complete working version - all skills from Kortix + Machine v12
-Tokens via environment variables only.
+Complete working Slack bot - all skills included.
+Set tokens via environment variables before running.
 """
-import os, sys, time, logging, requests, tempfile, subprocess
+import os
+import sys
+import time
+import logging
+import requests
+import tempfile
+import subprocess
 from collections import defaultdict, deque
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -12,14 +18,26 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("EpicAgent")
 
-# === TOKENS FROM ENVIRONMENT (no hardcoded secrets) ===
+# === LOAD TOKENS FROM ENVIRONMENT ===
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN")
 XAI_KEY = os.environ.get("XAI_API_KEY", "")
 PIXIO_KEY = os.environ.get("PIXIO_API_KEY", "")
 
 if not SLACK_BOT_TOKEN or not SLACK_APP_TOKEN:
-    print("ERROR: Set SLACK_BOT_TOKEN and SLACK_APP_TOKEN environment variables")
+    print("""
+╔════════════════════════════════════════════════════════════╗
+║  Epic Agent Ultimate v6 - Missing Tokens                   ║
+╚════════════════════════════════════════════════════════════╝
+
+Please set your Slack tokens first:
+
+export SLACK_BOT_TOKEN="xoxb-11370202537843-..."
+export SLACK_APP_TOKEN="xapp-1-A0BAZL0LCBX-..."
+
+Then run:
+python3 EpicAgent_ULTIMATE.py
+""")
     sys.exit(1)
 
 app = App(token=SLACK_BOT_TOKEN)
@@ -62,7 +80,8 @@ def grok(text, user, ch, extra=""):
         return f"Error: {e}"
 
 def pixio_image(prompt):
-    if not PIXIO_KEY: return None
+    if not PIXIO_KEY:
+        return None
     try:
         models = requests.get("https://beta.pixio.myapps.ai/api/v1/models",
             headers={"Authorization": f"Bearer {PIXIO_KEY}"}, timeout=8).json()
@@ -77,7 +96,8 @@ def pixio_image(prompt):
                 headers={"Authorization": f"Bearer {PIXIO_KEY}"}, timeout=6).json()
             if st.get("status") == "succeeded":
                 return st.get("outputUrl") or st.get("outputs", {}).get("imageUrl")
-            if st.get("status") == "failed": return None
+            if st.get("status") == "failed":
+                return None
         return None
     except:
         return None
@@ -93,7 +113,9 @@ def skill_pdf(text, title="Report"):
         c.setFont("Helvetica", 10)
         y = 720
         for line in text.split("\n"):
-            if y < 50: c.showPage(); y = 750
+            if y < 50:
+                c.showPage()
+                y = 750
             c.drawString(72, y, line[:95])
             y -= 13
         c.save()
@@ -150,12 +172,14 @@ def route(text, user, ch, say, client, thread_ts):
     add_mem(ch, user, text)
     t = text.lower()
 
+    # Image generation
     if any(w in t for w in ["generate", "make", "create"]) and any(w in t for w in ["image", "pic", "photo", "logo"]):
         say(text="🎨 Generating image...", thread_ts=thread_ts)
         url = pixio_image(text)
         send_long(say, url or "Image generation failed", thread_ts)
         return
 
+    # PDF
     if "pdf" in t or "report" in t:
         say(text="📄 Creating PDF report...", thread_ts=thread_ts)
         content = grok(f"Write a detailed report about: {text}", user, ch)
@@ -163,6 +187,7 @@ def route(text, user, ch, say, client, thread_ts):
         say(text=f"✅ PDF created: {path}", thread_ts=thread_ts)
         return
 
+    # PPTX
     if "pptx" in t or "presentation" in t or "slides" in t:
         say(text="📊 Creating presentation...", thread_ts=thread_ts)
         content = grok(f"Create presentation content about: {text}", user, ch)
@@ -170,6 +195,7 @@ def route(text, user, ch, say, client, thread_ts):
         say(text=f"✅ PPTX created: {path}", thread_ts=thread_ts)
         return
 
+    # DOCX
     if "docx" in t or "document" in t:
         say(text="📝 Creating document...", thread_ts=thread_ts)
         content = grok(f"Write a professional document about: {text}", user, ch)
@@ -177,6 +203,7 @@ def route(text, user, ch, say, client, thread_ts):
         say(text=f"✅ DOCX created: {path}", thread_ts=thread_ts)
         return
 
+    # Code execution
     if "run code" in t or "execute" in t:
         code = text.split("```")[-2] if "```" in text else text
         say(text="💻 Executing code...", thread_ts=thread_ts)
@@ -184,7 +211,7 @@ def route(text, user, ch, say, client, thread_ts):
         send_long(say, f"```\n{result}\n```", thread_ts)
         return
 
-    # Default: full Grok with memory
+    # Default chat with memory
     send_long(say, grok(text, user, ch), thread_ts)
 
 @app.event("message")
