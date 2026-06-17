@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "services": [
+    {
+      "id": "opencode-serve",
+      "name": "Agent Runtime API",
+      "adapter": "spawn",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "opencode-serve",
+      "framework": "node",
+      "sourcePath": "/workspace",
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": "bash /ephemeral/kortix-master/scripts/run-opencode-serve.sh",
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": 4096,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 3000,
+      "s6ServiceName": null,
+      "processPatterns": [
+        "opencode serve --port 4096"
+      ],
+      "healthCheck": {
+        "type": "tcp",
+        "timeoutMs": 2000
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "chromium-persistent",
+      "name": "Chromium",
+      "adapter": "s6",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "chromium-persistent",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": 9222,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-chromium-persistent",
+      "processPatterns": [
+        "chromium-browser"
+      ],
+      "healthCheck": {
+        "type": "tcp",
+        "timeoutMs": 1500
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "agent-browser-session",
+      "name": "Agent Browser Session",
+      "adapter": "s6",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "agent-browser-session",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [
+        "chromium-persistent"
+      ],
+      "port": null,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-agent-browser-session",
+      "processPatterns": [
+        "agent-browser-session"
+      ],
+      "healthCheck": {
+        "type": "none"
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "agent-browser-viewer",
+      "name": "Agent Browser Viewer",
+      "adapter": "s6",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "agent-browser-viewer",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": 9224,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-agent-browser-viewer",
+      "processPatterns": [
+        "agent-browser-viewer.js"
+      ],
+      "healthCheck": {
+        "type": "tcp",
+        "timeoutMs": 1500
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "static-web",
+      "name": "Static Web Server",
+      "adapter": "s6",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "static-web",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": 3211,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-static-web",
+      "processPatterns": [
+        "static-web.js"
+      ],
+      "healthCheck": {
+        "type": "tcp",
+        "timeoutMs": 1500
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "lss-sync",
+      "name": "LSS Sync",
+      "adapter": "s6",
+      "scope": "core",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "lss-sync",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [
+        "OPENAI_API_KEY"
+      ],
+      "deps": [],
+      "port": null,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-lss-sync",
+      "processPatterns": [
+        "lss-sync"
+      ],
+      "healthCheck": {
+        "type": "none"
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "sshd",
+      "name": "SSH Daemon",
+      "adapter": "s6",
+      "scope": "bootstrap",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "sshd",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": 22,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-sshd",
+      "processPatterns": [
+        "sshd -D"
+      ],
+      "healthCheck": {
+        "type": "none"
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    },
+    {
+      "id": "docker",
+      "name": "Docker Daemon",
+      "adapter": "s6",
+      "scope": "bootstrap",
+      "description": "",
+      "builtin": true,
+      "userVisible": false,
+      "projectId": null,
+      "template": "docker",
+      "framework": null,
+      "sourcePath": null,
+      "sourceType": "files",
+      "sourceRef": null,
+      "startCommand": null,
+      "installCommand": null,
+      "buildCommand": null,
+      "envVarKeys": [],
+      "deps": [],
+      "port": null,
+      "desiredState": "running",
+      "autoStart": true,
+      "restartPolicy": "always",
+      "restartDelayMs": 2000,
+      "s6ServiceName": "svc-docker",
+      "processPatterns": [
+        "dockerd"
+      ],
+      "healthCheck": {
+        "type": "none"
+      },
+      "createdAt": "2026-06-12T21:48:38.808Z",
+      "updatedAt": "2026-06-17T10:52:23.292Z"
+    }
+  ]
+}

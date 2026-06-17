@@ -1,0 +1,17 @@
+[Unit]
+Description=Epic Agent Ultimate God Mode v6 - 24/7 Slack Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/workspace
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /workspace/EpicAgent_ULTIMATE.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/workspace/epic_ultimate.log
+StandardError=append:/workspace/epic_ultimate.log
+
+[Install]
+WantedBy=multi-user.target

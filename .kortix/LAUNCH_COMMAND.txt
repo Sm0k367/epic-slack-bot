@@ -1,0 +1,15 @@
+================================================================================
+                    EPIC AGENT - LAUNCH COMMAND
+================================================================================
+
+Copy and paste this into your terminal (it will stay running):
+
+    python3 /workspace/EpicAgent.py
+
+================================================================================
+Once running, go to Slack and type:
+
+    @Epic Agent yo
+
+The bot will reply with Grok AI.
+================================================================================
